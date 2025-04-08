@@ -26,7 +26,7 @@ This Python script uses a Language Model (LLM) API to:
   ```
   (Only ASCII characters are kept to ensure compatibility)
 
-It’s a force multiplier. In the age of LLMs, why should we still spend time renaming our books manually?  
+It’s a force multiplier. In the age of LLMs, why should we still spend time renaming our books manually?
 Life is already busy enough finding where to download them. Let AI do the cleanup.
 
 ---
@@ -38,7 +38,7 @@ This project was born from practical pain:
 - Mixed use of punctuation and languages in filenames.
 - Some authors are listed by first name, last name, or just a transliterated guess.
 
-Even worse: some filenames are just numbers.  
+Even worse: some filenames are just numbers.
 So this project fixes that — by letting an AI read and rename based on actual content, not random site logic.
 
 ---
@@ -63,8 +63,10 @@ So this project fixes that — by letting an AI read and rename based on actual 
 - A few library-related warnings (e.g., from `ebooklib`) may appear — but they do **not affect functionality**.
 - Accuracy depends on model and input quality — this tool is a **productivity booster**, not a 100% solution.
 - The current implementation includes **multiple plugins and dependencies**, resulting in a relatively large project footprint. Due to the high degree of LLM integration and broad format support, the filesize and complexity are on the heavier side. A **lighter, plugin-optional version is in the roadmap** for future releases.
+- Processing lengthy PDFs requires **multiple API calls**, with an average of ~467 tokens used (**$0.03 per request**). While optimizations exist, long LLM instructions may increase costs. **Token efficiency improvements** are planned.
 
 ---
+
 
 ## ✅ Usage
 
@@ -107,7 +109,7 @@ Install dependencies:
 pip install openai pymupdf ebooklib beautifulsoup4 langdetect python-dotenv
 ```
 
-Also, install **Calibre** from https://calibre-ebook.com/  
+Also, install **Calibre** from https://calibre-ebook.com/
 Ensure `ebook-convert` is added to your system PATH.
 
 ---
@@ -120,10 +122,12 @@ MIT — because knowledge (and cleaner filenames) should be free.
 
 ## 🤝 Acknowledgements
 
-This README (and most of the program) was written with the help of AI.  
+This README (and most of the program) was written with the help of AI.
 I just had the problem and a vision — the AI handled the rest.
 
-Special thanks to **SiliconFlow**, and their choice of **华为云昇腾云服务 (Huawei Cloud Ascend AI Cloud)** as a partner, which made this use of the `deepseek-ai/DeepSeek-R1-Distill-Qwen-32B` model possible.  
+Special thanks to **SiliconFlow**, and their choice of **华为云昇腾云服务 (Huawei Cloud Ascend AI Cloud)** as a partner, which made this use of the `deepseek-ai/DeepSeek-R1-Distill-Qwen-32B` model possible.
 It is the **first no-restriction platform** I’ve encountered that allows real flexibility in usage — and I **strongly recommend** it to anyone who wants to build LLM-powered tools without worrying about platform constraints or commercial roadblocks.
+
+Happy renaming.
 
 Happy renaming.

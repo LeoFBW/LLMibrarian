@@ -10,6 +10,8 @@ from openai import OpenAI
 from langdetect import detect
 from dotenv import load_dotenv
 load_dotenv()
+from datetime import datetime, timezone
+
 
 # === Config ===
 
@@ -84,6 +86,7 @@ def get_title_and_author(text, original_filename):
     except:
         pass
 
+
     phase1_prompt = (
         f"You are a metadata assistant. File name: `{original_filename}`. Language: `{lang}`.\n\n"
         f"If the file name clearly contains a clean, usable title and full author name, return it in this format:\n"
@@ -96,7 +99,7 @@ def get_title_and_author(text, original_filename):
 
     try:
         response = client.chat.completions.create(
-            model="deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
+            model="deepseek-ai/DeepSeek-V2.5",
             messages=[{"role": "user", "content": phase1_prompt}]
         )
         reply = response.choices[0].message.content.strip()
@@ -185,7 +188,7 @@ def process_all_files(directory):
         print(f"\n[~] Processing: {file.name}")
 
         if file.suffix.lower() == ".pdf":
-            text = text = extract_first_pages_text(file)
+            text = extract_first_pages_text(file)
         elif file.suffix.lower() == ".epub":
             text = extract_text_from_epub(file)
         elif file.suffix.lower() in [".mobi", ".azw3"]:
@@ -208,6 +211,25 @@ def process_all_files(directory):
 
 # === Entry Point ===
 token_sum = 0
+# Start chrono
+
+utc_start = datetime.now(timezone.utc)
+print("Start time (UTC):", utc_start.strftime("%H:%MZ"))
+
 if __name__ == "__main__":
+    utc_start = datetime.now(timezone.utc)
+
     process_all_files(PDF_DIR)
-    print(f"Total token used {token_sum}, per book: {round(token_sum/counter)}")
+
+    utc_end = datetime.now(timezone.utc)
+    total_duration = utc_end - utc_start
+    avg_seconds = total_duration.total_seconds() / counter
+
+    print(f"""
+    === PDF Processing Complete ===
+    Total tokens processed: {token_sum}
+    Average tokens per book: {round(token_sum / counter)} tokens
+    End time (UTC): {utc_end.strftime("%H:%MZ")}
+    Total time taken: {total_duration}
+    Average time per book: {avg_seconds:.1f} seconds
+    """)
