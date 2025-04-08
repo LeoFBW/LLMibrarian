@@ -84,21 +84,47 @@ def get_title_and_author(text, original_filename):
     except:
         pass
 
-    prompt = (
+    phase1_prompt = (
         f"You are a metadata assistant. File name: `{original_filename}`. Language: `{lang}`.\n\n"
+        f"If the file name clearly contains a clean, usable title and full author name, return it in this format:\n"
+        f"`Title - AuthorFullName`\n"
+        f"Clean it by removing brackets, site names, extra symbols, and fix spacing/capitalization.\n\n"
+        f"If the filename is too vague, noisy, or lacks usable info, reply with ONLY this word:\n"
+        f"`MORE`\n\n"
+        f"No markdown, no extra words, only the formatted result or the keyword `MORE`."
+    )
 
-        f"Output exactly one line in this format:\n"
+    try:
+        response = client.chat.completions.create(
+            model="deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
+            messages=[{"role": "user", "content": phase1_prompt}]
+        )
+        reply = response.choices[0].message.content.strip()
+
+        # If LLM says MORE, proceed to Phase 2
+        if reply.upper() == "MORE":
+            return fallback_with_text(text, original_filename, lang)
+        else:
+            token_count = response.usage.total_tokens if hasattr(response, "usage") else 0
+            return sanitize_filename(reply), token_count
+
+    except Exception as e:
+        print(f"[!] LLM request failed (Phase 1): {e}")
+        return None, 0
+
+
+
+def fallback_with_text(text, original_filename, lang):
+    print("Stage 2 activated")
+    prompt = (
+        f"You are a metadata assistant. The file name `{original_filename}` was too vague.\n"
+        f"Use the text below to extract a short (5–15 word) title and full author name.\n"
+        f"Return it in this exact format:\n"
         f"`Title - AuthorFullName`\n\n"
-
-        f"If the file name already contains a usable title and author, clean it by removing brackets, site names, extra symbols (e.g. (), 《》, 【】), and fix spacing/capitalization.\n"
-        f"If not usable, extract a short (5–15 word) title and full author name from the text.\n\n"
-
-        f"Strict rules:\n"
-    f"- One line only, no explanation or markdown.\n"
-    f"- Use only ASCII characters.\n"
-    f"- Do NOT say anything like 'cleaned up result is...'\n\n"
-
-    f"Text (up to 3000 chars):\n{text[:3000]}"
+        f"Rules:\n"
+        f"- ASCII only\n"
+        f"- No markdown, no extra commentary, just the formatted result\n\n"
+        f"Text:\n{text[:3000]}"
     )
 
     try:
@@ -109,8 +135,9 @@ def get_title_and_author(text, original_filename):
         reply = response.choices[0].message.content.strip()
         token_count = response.usage.total_tokens if hasattr(response, "usage") else 0
         return sanitize_filename(reply), token_count
+
     except Exception as e:
-        print(f"[!] LLM request failed: {e}")
+        print(f"[!] LLM request failed (Phase 2): {e}")
         return None, 0
 
 def sanitize_filename(name):
@@ -182,4 +209,4 @@ def process_all_files(directory):
 token_sum = 0
 if __name__ == "__main__":
     process_all_files(PDF_DIR)
-    print(f"Total token used {token_sum}, per book: {token_sum/counter}")
+    print(f"Total token used {token_sum}, per book: {round(token_sum/counter)}")
