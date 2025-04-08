@@ -77,7 +77,7 @@ def extract_text_from_mobi_or_azw3(file_path):
 
 # === LLM Interaction ===
 
-def get_title_and_author(text):
+def get_title_and_author(text, original_filename):
     lang = "en"
     try:
         lang = detect(text[:500])
@@ -85,16 +85,20 @@ def get_title_and_author(text):
         pass
 
     prompt = (
-        f"You are a book metadata assistant. The input text is in language: `{lang}`.\n"
-        f"If the book's real title and author's full name are clearly stated in the text or metadata, "
-        f"use them directly.\n"
-        f"If not, extract a meaningful short title (5–15 words max) and the full name of the most relevant author.\n\n"
-        f"Return ONLY the result in the following format (ASCII characters only, no extra explanation):\n"
-        f"Title - AuthorFullName\n\n"
-        f"Do not include punctuation like 《》, “” or ， or ：. Use only characters typeable on an English keyboard.\n"
-        f"Reply with just the final result — no sentences, no quotation marks, no markdown formatting.\n\n"
-        f"Respond in the same language: `{lang}`.\n\n"
-        f"Text:\n{text[:3000]}"
+        f"You are a metadata assistant. File name: `{original_filename}`. Language: `{lang}`.\n\n"
+
+        f"Output exactly one line in this format:\n"
+        f"`Title - AuthorFullName`\n\n"
+
+        f"If the file name already contains a usable title and author, clean it by removing brackets, site names, extra symbols (e.g. (), 《》, 【】), and fix spacing/capitalization.\n"
+        f"If not usable, extract a short (5–15 word) title and full author name from the text.\n\n"
+
+        f"Strict rules:\n"
+    f"- One line only, no explanation or markdown.\n"
+    f"- Use only ASCII characters.\n"
+    f"- Do NOT say anything like 'cleaned up result is...'\n\n"
+
+    f"Text (up to 3000 chars):\n{text[:3000]}"
     )
 
     try:
@@ -167,7 +171,7 @@ def process_all_files(directory):
             print("[-] No text found.")
             continue
 
-        new_filename, token_expenditure = get_title_and_author(text)
+        new_filename, token_expenditure = get_title_and_author(text, file.stem)
         token_sum += token_expenditure
         if new_filename:
             rename_file(file, new_filename)
