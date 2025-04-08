@@ -1,17 +1,21 @@
+# Standard library imports
 import os
 import re
-import fitz  # PyMuPDF
 import subprocess
 import tempfile
-from pathlib import Path
-from ebooklib import epub
-from bs4 import BeautifulSoup
-from openai import OpenAI
-from langdetect import detect
-from dotenv import load_dotenv
-load_dotenv()
 from datetime import datetime, timezone
+from pathlib import Path
 
+# Third-party library imports
+import fitz  # PyMuPDF
+from bs4 import BeautifulSoup
+from dotenv import load_dotenv
+from ebooklib import epub
+from langdetect import detect
+from openai import OpenAI
+
+# Local/application-specific imports
+load_dotenv()
 
 # === Config ===
 
@@ -91,7 +95,8 @@ def get_title_and_author(text, original_filename):
         f"You are a metadata assistant. File name: `{original_filename}`. Language: `{lang}`.\n\n"
         f"If the file name clearly contains a clean, usable title and full author name, return it in this format:\n"
         f"`Title - AuthorFullName`\n"
-        f"Clean it by removing brackets, site names, extra symbols, and fix spacing/capitalization.\n\n"
+        f"Clean it by removing brackets, site names, extra symbols, and fix spacing/capitalization.\n"
+        f"Remove anything like 'Z-Library' – it's not an author, just site garbage.\n\n"
         f"If the filename is too vague, noisy, or lacks usable info, reply with ONLY this word:\n"
         f"`MORE`\n\n"
         f"No markdown, no extra words, only the formatted result or the keyword `MORE`."
@@ -99,7 +104,9 @@ def get_title_and_author(text, original_filename):
 
     try:
         response = client.chat.completions.create(
-            model="deepseek-ai/DeepSeek-V2.5",
+            model="deepseek-ai/DeepSeek-V2.5",#Best result, fast, cheap
+            # model="Qwen2.5-7B-Instruct", Very fast model - very cheap
+            # model="internlm/internlm2_5-7b-chat", Free
             messages=[{"role": "user", "content": phase1_prompt}]
         )
         reply = response.choices[0].message.content.strip()
