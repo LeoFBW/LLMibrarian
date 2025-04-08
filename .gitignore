@@ -1,0 +1,24 @@
+# Environment variables and secrets
+.env
+
+# Virtual environment (local dependencies)
+.venv/
+venv/
+
+# PyCharm project settings (not needed in repo)
+.idea/
+
+# Bytecode and cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# OS-specific junk
+.DS_Store
+Thumbs.db
+
+# Log and temp files
+*.log
+*.tmp
+
