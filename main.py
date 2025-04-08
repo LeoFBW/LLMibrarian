@@ -124,7 +124,7 @@ def fallback_with_text(text, original_filename, lang):
         f"Rules:\n"
         f"- ASCII only\n"
         f"- No markdown, no extra commentary, just the formatted result\n\n"
-        f"Text:\n{text[:3000]}"
+        f"Text:\n{text[:1000]}"
     )
 
     try:
@@ -199,6 +199,7 @@ def process_all_files(directory):
             continue
 
         new_filename, token_expenditure = get_title_and_author(text, file.stem)
+        print(f"{token_expenditure} tokens used")
         token_sum += token_expenditure
         if new_filename:
             rename_file(file, new_filename)
