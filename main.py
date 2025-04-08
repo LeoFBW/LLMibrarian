@@ -14,7 +14,7 @@ load_dotenv()
 # === Config ===
 
 API_KEY_ACCESS = os.getenv("API_KEY_ACCESS")
-PDF_DIR = Path(r"D:\Downloads_NEW\journal paper")
+PDF_DIR = Path(os.getenv("PDF_DIR"))
 
 client = OpenAI(
     api_key=API_KEY_ACCESS,
@@ -84,7 +84,6 @@ def get_title_and_author(text):
     except:
         pass
 
-    # Prompt includes instruction to use only ASCII characters
     prompt = (
         f"You are a book metadata assistant. The input text is in language: `{lang}`.\n"
         f"If the book's real title and author's full name are clearly stated in the text or metadata, "
@@ -104,10 +103,11 @@ def get_title_and_author(text):
             messages=[{"role": "user", "content": prompt}]
         )
         reply = response.choices[0].message.content.strip()
-        return sanitize_filename(reply)
+        token_count = response.usage.total_tokens if hasattr(response, "usage") else 0
+        return sanitize_filename(reply), token_count
     except Exception as e:
         print(f"[!] LLM request failed: {e}")
-        return None
+        return None, 0
 
 def sanitize_filename(name):
     name = re.sub(r'[<>:"/\\|?*]', '', name)  # Remove illegal characters
@@ -142,12 +142,15 @@ def test_llm_connection():
 # === Main Processing ===
 
 def process_all_files(directory):
+    global counter
     test_llm_connection()
     supported_exts = [".pdf", ".epub", ".mobi", ".azw3"]
-    all_files = [f for f in directory.iterdir() if f.suffix.lower() in supported_exts]
+    all_files= [f for f in directory.iterdir() if f.suffix.lower() in supported_exts]
+    counter = len(all_files)
     print(f"Found {len(all_files)} supported files.")
 
     for file in all_files:
+        global token_sum
         print(f"\n[~] Processing: {file.name}")
 
         if file.suffix.lower() == ".pdf":
@@ -164,13 +167,15 @@ def process_all_files(directory):
             print("[-] No text found.")
             continue
 
-        new_filename = get_title_and_author(text)
+        new_filename, token_expenditure = get_title_and_author(text)
+        token_sum += token_expenditure
         if new_filename:
             rename_file(file, new_filename)
         else:
             print("[-] No new name generated.")
 
 # === Entry Point ===
-
+token_sum = 0
 if __name__ == "__main__":
     process_all_files(PDF_DIR)
+    print(f"Total token used {token_sum}, per book: {token_sum/counter}")
