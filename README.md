@@ -120,7 +120,7 @@ MIT — because knowledge (and cleaner filenames) should be free.
 This README (and most of the program) was written with the help of AI.
 I just had the problem and a vision — the AI handled the rest.
 
-Special thanks to **SiliconFlow**, and their choice of **华为云昇腾云服务 (Huawei Cloud Ascend AI Cloud)** as a partner, which made this use of the `deepseek-ai/DeepSeek-R1-Distill-Qwen-32B` model possible.
+Special thanks to **SiliconFlow**, and their choice of **华为云昇腾云服务 (Huawei Cloud Ascend AI Cloud)** as a partner, which made this use of the `deepseek` `qwen` model possible.
 It is the **first no-restriction platform** I’ve encountered that allows real flexibility in usage — and I **strongly recommend** it to anyone who wants to build LLM-powered tools without worrying about platform constraints or commercial roadblocks.
 
 Happy renaming.
