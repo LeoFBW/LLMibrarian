@@ -1,7 +1,7 @@
+fitz==0.0.1.dev2
 pathlib==1.0.1
-EbookLib==0.18
 beautifulsoup4==4.13.3
-openai==1.71.0
-langdetect==1.0.9
 python-dotenv==1.1.0
-PyMuPDF==1.25.5
+EbookLib==0.18
+langdetect==1.0.9
+openai==1.71.0
