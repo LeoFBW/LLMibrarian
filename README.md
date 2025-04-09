@@ -68,8 +68,7 @@ Originally designed only for `.pdf` files, it has since grown to support various
 2. Update the folder path in a new `.env` file (as shown in the default configuration), directly in the script, or wherever you prefer.
 3. Provide your LLM API key and base URL in `main.py` or within the `.env` file.
 4. Run the script. It will rename files in-place. (Additional features may be introduced in the future.)
-5. The script typically uses 160-200 tokens on average based on our testing, with a runtime of 2.5-3 seconds per file. Edge cases may exist.
-
+5. The script typically uses 160-200 tokens on average across the three models, with a runtime of 2.5-3 seconds per file without async. With async, the average runtime drops below 1 second for sample sizes above 15 (based on testing). Edge cases may exist.
 > **Note:** Only ASCII characters are retained in the new filename for universal compatibility.
 
 ---
