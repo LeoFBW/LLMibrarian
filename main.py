@@ -26,7 +26,7 @@ BASE_URL = "https://api.siliconflow.cn/v1"
 
 FT_MODEL = "deepseek-ai/DeepSeek-V2.5"
 FALLBACK_MODEL = "deepseek-ai/DeepSeek-V2.5"
-MAX_CONCURRENT = 5  # Concurrency limit to help manage RPM/TPM
+MAX_CONCURRENT = 15  # Concurrency limit, check your API provider's limit on RPM/TPM, this is for SiliconFlow Level 0
 semaphore = asyncio.Semaphore(MAX_CONCURRENT)
 
 # ===== Prompt Templates =====
@@ -220,7 +220,7 @@ async def main():
     print(f"📊 Avg tokens/file    : {round(token_sum / len(all_files)) if all_files else 0:>6}")
     print(f"⏱️ Total time taken   : {duration.total_seconds():>6.2f} seconds")
     print(f"⏱️ Avg time/file      : {avg_time:>6.2f} seconds")
-    print(f"🕒 End time (UTC)     : {utc_end.strftime('%Y-%m-%d %H:%M:%SZ')}")
+    print(f"🕒 End time (UTC)     : {utc_end.strftime('%H:%M:%S')}")
     print("=" * 40 + "\n")
 
 
